@@ -61,6 +61,12 @@ app.post('/api/persons', (request, response) => {
     });
   }
 
+  if (persons.some((p) => p.name === body.name)) {
+    return response.status(400).json({
+      error: `${body.name} is already in phonebook`,
+    });
+  }
+
   const person = {
     name: body.name,
     number: body.number,
