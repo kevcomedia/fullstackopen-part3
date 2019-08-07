@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 
 let persons = [
@@ -24,6 +25,8 @@ let persons = [
   },
 ];
 
+app.use(bodyParser.json());
+
 app.get('/', (request, response) => {
   response.send('phonebook backend');
 });
@@ -38,6 +41,35 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
   response.json(persons);
+});
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
+
+  const missingFields = [];
+  if (!body.name) {
+    missingFields.push('name');
+  }
+  if (!body.number) {
+    missingFields.push('number');
+  }
+
+  if (missingFields.length > 0) {
+    return response.status(400).json({
+      error: 'missing info',
+      missingFields,
+    });
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+  };
+
+  persons = persons.concat(person);
+
+  response.status(201).json(person);
 });
 
 app.get('/api/persons/:id', (request, response) => {
