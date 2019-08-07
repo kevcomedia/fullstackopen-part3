@@ -28,6 +28,14 @@ app.get('/', (request, response) => {
   response.send('phonebook backend');
 });
 
+app.get('/info', (request, response) => {
+  const count = persons.length === 1 ? '1 person' : `${persons.length} people`;
+
+  const countP = `<p>Phonebook has info for ${count}</p>`;
+  const requestTimeP = `<p>${new Date()}</p>`;
+  response.send(`${countP}${requestTimeP}`);
+});
+
 app.get('/api/persons', (request, response) => {
   response.json(persons);
 });
