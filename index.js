@@ -26,8 +26,27 @@ let persons = [
   },
 ];
 
-app.use(morgan('tiny'));
 app.use(bodyParser.json());
+app.use(
+  morgan((tokens, request, response) => {
+    const method = tokens.method(request, response);
+    const log = [
+      method,
+      tokens.url(request, response),
+      tokens.status(request, response),
+      tokens.res(request, response, 'content-length'),
+      '-',
+      tokens['response-time'](request, response),
+      'ms',
+    ];
+
+    if (method === 'POST') {
+      log.push(JSON.stringify(request.body));
+    }
+
+    return log.join(' ');
+  }),
+);
 
 app.get('/', (request, response) => {
   response.send('phonebook backend');
