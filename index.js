@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const app = express();
 
 let persons = [
@@ -25,6 +26,7 @@ let persons = [
   },
 ];
 
+app.use(morgan('tiny'));
 app.use(bodyParser.json());
 
 app.get('/', (request, response) => {
