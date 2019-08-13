@@ -48,6 +48,8 @@ app.use(
   }),
 );
 
+app.use(express.static('build'));
+
 app.get('/', (request, response) => {
   response.send('phonebook backend');
 });
