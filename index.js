@@ -64,13 +64,15 @@ app.get('/info', (request, response) => {
   response.send(`${countP}${requestTimeP}`);
 });
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
-  });
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+    .then((persons) => {
+      response.json(persons);
+    })
+    .catch(next);
 });
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
   const missingFields = [];
@@ -93,9 +95,12 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.status(201).json(person);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.status(201).json(person);
+    })
+    .catch(next);
 });
 
 app.get('/api/persons/:id', (request, response) => {
@@ -109,10 +114,27 @@ app.get('/api/persons/:id', (request, response) => {
   }
 });
 
-app.delete('/api/persons/:id', (request, response) => {
-  Person.findByIdAndRemove(request.params.id).then((result) => {
-    response.status(204).end();
-  });
+app.delete('/api/persons/:id', (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch(next);
+});
+
+app.use((request, response) => {
+  response.status(404).json({ error: 'unknown endpoint' });
+});
+
+// General error handler
+app.use((error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+    return response.status(400).json({ error: error.message });
+  }
+
+  next(error);
 });
 
 const port = process.env.PORT;
