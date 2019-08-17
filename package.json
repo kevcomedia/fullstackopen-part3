@@ -11,6 +11,7 @@
   "author": "Kev Comedia",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.6.9",
     "morgan": "^1.9.1"
