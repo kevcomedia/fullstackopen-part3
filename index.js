@@ -88,21 +88,14 @@ app.post('/api/persons', (request, response) => {
     });
   }
 
-  if (persons.some((p) => p.name === body.name)) {
-    return response.status(400).json({
-      error: `${body.name} is already in phonebook`,
-    });
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
-  };
+  });
 
-  persons = persons.concat(person);
-
-  response.status(201).json(person);
+  person.save().then((savedPerson) => {
+    response.status(201).json(person);
+  });
 });
 
 app.get('/api/persons/:id', (request, response) => {
