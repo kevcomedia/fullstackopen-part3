@@ -57,21 +57,6 @@ app.get('/api/persons', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
-  const missingFields = [];
-  if (!body.name) {
-    missingFields.push('name');
-  }
-  if (!body.number) {
-    missingFields.push('number');
-  }
-
-  if (missingFields.length > 0) {
-    return response.status(400).json({
-      error: 'missing info',
-      missingFields,
-    });
-  }
-
   const person = new Person({
     name: body.name,
     number: body.number,
@@ -133,6 +118,8 @@ app.use((error, request, response, next) => {
   console.log(error.message);
 
   if (error.name === 'CastError' && error.kind === 'ObjectId') {
+    return response.status(400).json({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message });
   }
 
